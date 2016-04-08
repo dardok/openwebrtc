@@ -47,10 +47,10 @@ EXTRA_DIST = \
 
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
 
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
 if !OWR_STATIC
-INTROSPECTION_SCANNER_ARGS += --pkg gstreamer-1.0 --pkg gstreamer-video-1.0 --pkg gstreamer-app-1.0
+INTROSPECTION_SCANNER_ARGS += --pkg gstreamer-1.0 --pkg gstreamer-video-1.0 --pkg gstreamer-app-1.0 --pkg openwebrtc-0.3
 endif
 
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
@@ -62,7 +62,7 @@ if HAVE_INTROSPECTION
 introspection_sources = $(libopenwebrtc_gst_la_SOURCES)
 
 OwrGst-@OWR_API_VERSION@.gir: libopenwebrtc_gst.la
-OwrGst_@OWR_API_VERSION_UNDERSCORE@_gir_INCLUDES = GObject-2.0
+OwrGst_@OWR_API_VERSION_UNDERSCORE@_gir_INCLUDES = GObject-2.0 Gst-1.0 Owr-@OWR_API_VERSION@
 OwrGst_@OWR_API_VERSION_UNDERSCORE@_gir_CFLAGS = \
     $(INCLUDES) \
     -I$(top_srcdir)/owr \
