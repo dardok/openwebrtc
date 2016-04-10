@@ -53,7 +53,7 @@ if !OWR_STATIC
 INTROSPECTION_SCANNER_ARGS += --pkg gstreamer-1.0 --pkg gstreamer-video-1.0 --pkg gstreamer-app-1.0
 endif
 
-INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
+INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir) --includedir=$(srcdir)/../owr
 if OWR_STATIC
 INTROSPECTION_COMPILER_ARGS += --shared-library=""
 endif
