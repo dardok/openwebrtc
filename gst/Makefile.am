@@ -48,9 +48,9 @@ EXTRA_DIST = \
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
 
-INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --warn-all
+INTROSPECTION_SCANNER_ARGS = --add-include-path=$(srcdir) --add-include-path=$(srcdir)/../owr --warn-all
 if !OWR_STATIC
-INTROSPECTION_SCANNER_ARGS += --pkg gstreamer-1.0 --pkg gstreamer-video-1.0 --pkg gstreamer-app-1.0 --pkg openwebrtc-0.3
+INTROSPECTION_SCANNER_ARGS += --pkg gstreamer-1.0 --pkg gstreamer-video-1.0 --pkg gstreamer-app-1.0
 endif
 
 INTROSPECTION_COMPILER_ARGS = --includedir=$(srcdir)
