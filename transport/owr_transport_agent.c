@@ -1038,8 +1038,6 @@ static gboolean add_session(GHashTable *args)
         guint send_ssrc = 0;
         gchar *cname = NULL;
 
-        pending_session_info = g_new0 (PendingSessionInfo, 1);
-
         _owr_media_session_set_on_send_source(OWR_MEDIA_SESSION(session),
             g_cclosure_new_object_swap(G_CALLBACK(on_new_send_source), G_OBJECT(transport_agent)));
 
@@ -1354,6 +1352,7 @@ static gboolean emit_bitrate_change(GHashTable *args)
             GST_INFO("Updating bitrate to %u from %u", bitrate, old_bitrate);
             g_object_set(payload, "bitrate", bitrate, NULL);
         }
+        g_object_unref(payload);
     } else
         GST_WARNING("No send payload set for media session");
 
@@ -2782,8 +2781,10 @@ static GstElement * on_rtpbin_request_aux_sender(G_GNUC_UNUSED GstElement *rtpbi
         goto no_retransmission;
 
     g_object_get(payload, "rtx-payload-type", &rtx_pt, NULL);
-    if (rtx_pt < 0)
+    if (rtx_pt < 0) {
+        g_object_unref(payload);
         goto no_retransmission;
+    }
 
     rtxsend = gst_element_factory_make("rtprtxsend", NULL);
     g_return_val_if_fail(rtxsend, NULL);
@@ -2803,6 +2804,7 @@ static GstElement * on_rtpbin_request_aux_sender(G_GNUC_UNUSED GstElement *rtpbi
     if (rtx_time)
         g_object_set(rtxsend, "max-size-time", rtx_time, NULL);
 
+    g_object_unref(payload);
     return create_aux_bin("rtprtxsend", rtxsend, session_id);
 
 no_retransmission:
@@ -4407,6 +4409,7 @@ static gboolean on_payload_adaptation_request(GstElement *screamqueue, guint pt,
     payload = _owr_media_session_get_send_payload(media_session);
     g_assert(pt);
     g_object_get(payload, "rtx-payload-type", &pt_rtx, "adaptation", &adapt_type, NULL);
+    g_object_unref(payload);
     /* Use adaptation for this payload if not retransmission */
     return (adapt_type == OWR_ADAPTATION_TYPE_SCREAM) && (pt != pt_rtx);
 }
