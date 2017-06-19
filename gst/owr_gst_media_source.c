@@ -51,6 +51,7 @@ static void owr_gst_media_source_get_property(GObject *object, guint property_id
     GValue *value, GParamSpec *pspec);
 
 static GstElement *owr_gst_media_source_request_source(OwrMediaSource *media_source, GstCaps *caps);
+static void owr_gst_media_source_release_source(OwrMediaSource *media_source, GstElement *source);
 
 struct _OwrGstMediaSourcePrivate {
     GstElement *source;
@@ -86,6 +87,7 @@ static void owr_gst_media_source_class_init(OwrGstMediaSourceClass *klass)
     gobject_class->dispose = owr_gst_media_source_dispose;
 
     media_source_class->request_source = (void *(*)(OwrMediaSource *, void *))owr_gst_media_source_request_source;
+    media_source_class->release_source = (void (*)(OwrMediaSource *, void *))owr_gst_media_source_release_source;
 
     g_object_class_install_properties(gobject_class, N_PROPERTIES, obj_properties);
 }
@@ -190,4 +192,9 @@ static GstElement *owr_gst_media_source_request_source(OwrMediaSource *media_sou
     g_return_val_if_fail(priv->source, NULL);
 
     return priv->source;
+}
+
+static void owr_gst_media_source_release_source(OwrMediaSource *media_source, GstElement *source)
+{
+g_print("refcount = %u", GST_OBJECT_REFCOUNT_VALUE(source));
 }
