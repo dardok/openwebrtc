@@ -196,5 +196,8 @@ static GstElement *owr_gst_media_source_request_source(OwrMediaSource *media_sou
 
 static void owr_gst_media_source_release_source(OwrMediaSource *media_source, GstElement *source)
 {
-g_print("refcount = %u", GST_OBJECT_REFCOUNT_VALUE(source));
+	(void) media_source;
+	(void) source;
+
+	g_print("refcount = %u", GST_OBJECT_REFCOUNT_VALUE(source));
 }
