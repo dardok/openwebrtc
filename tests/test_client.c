@@ -1,3 +1,5 @@
+// gcc -I../transport -I../local -I../owr  -o test_client test_client.c $(pkg-config --cflags --libs glib-2.0 gobject-2.0 json-glib-1.0 libsoup-2.4 openwebrtc-0.3)
+
 /*
  * Copyright (C) 2015 Ericsson AB. All rights reserved.
  *
@@ -42,7 +44,7 @@
 #include <libsoup/soup.h>
 #include <string.h>
 
-#define SERVER_URL "http://demo.openwebrtc.org"
+#define SERVER_URL "https://demo.openwebrtc.org"
 
 #define ENABLE_PCMA TRUE
 #define ENABLE_PCMU TRUE
@@ -50,6 +52,7 @@
 #define ENABLE_H264 TRUE
 #define ENABLE_VP8  TRUE
 
+static SoupLogger *logger;
 static GList *local_sources, *renderers;
 static OwrTransportAgent *transport_agent;
 static gchar *session_id, *peer_id;
@@ -295,7 +298,8 @@ static void send_answer()
     g_object_unref(generator);
 
     url = g_strdup_printf(SERVER_URL"/ctos/%s/%u/%s", session_id, client_id, peer_id);
-    soup_session = soup_session_new();
+    soup_session = soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, 0, NULL);
+    soup_session_add_feature(soup_session, SOUP_SESSION_FEATURE (logger));
     soup_message = soup_message_new("POST", url);
     g_free(url);
     soup_message_set_request(soup_message, "application/json",
@@ -762,7 +766,8 @@ static void send_eventsource_request(const gchar *url)
     SoupSession *soup_session;
     SoupMessage *soup_message;
 
-    soup_session = soup_session_new();
+    soup_session = soup_session_new_with_options(SOUP_SESSION_SSL_STRICT, 0, NULL);
+    soup_session_add_feature(soup_session, SOUP_SESSION_FEATURE (logger));
     soup_message = soup_message_new("GET", url);
     soup_session_send_async(soup_session, soup_message, NULL,
         (GAsyncReadyCallback)eventsource_request_sent, NULL);
@@ -788,6 +793,8 @@ gint main(gint argc, gchar **argv)
         g_print("Usage: %s <session id>\n", argv[0]);
         return -1;
     }
+
+    logger = soup_logger_new(SOUP_LOGGER_LOG_BODY, -1);
 
     session_id = argv[1];
     client_id = g_random_int();
